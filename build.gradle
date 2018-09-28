@@ -1,0 +1,92 @@
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+    }
+    dependencies {
+        classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+    }
+}
+
+apply plugin: "net.minecraftforge.gradle.forge"
+
+version = "1.12.2-" + getVersion()
+group = "p455w0rd"
+archivesBaseName = "Embersified"
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+minecraft {
+    version = "1.12.2-14.23.4.2760"
+    runDir = "run"
+    mappings = "snapshot_20171003"
+	useDepAts = true
+}
+
+repositories {
+	maven {
+		name = "progwml6"
+		url = "http://dvs1.progwml6.com/files/maven"
+	}
+	maven {
+		name = "tterrag"
+		url = "http://maven.tterrag.com"
+	}
+	maven {
+		name = "ChickenBones"
+		url "http://chickenbones.net/maven"
+	}
+	maven {
+        name = "CoFH"
+        url = "http://maven.covers1624.net"
+    }
+}
+
+dependencies {
+	deobfCompile "mezz.jei:jei_1.12.2:+"
+	deobfCompile "mcjty.theoneprobe:TheOneProbe-1.12:1.12-1.4.23-16"
+	deobfCompile "codechicken:CodeChickenLib:1.12.2-3.2.1.351:universal"
+	deobfCompile "cofh:RedstoneFlux:1.12-2.0.2.4:universal"
+	deobfCompile "cofh:ThermalDynamics:1.12.2-2+:universal"
+	deobfCompile "cofh:ThermalFoundation:1.12.2-2+:universal"
+	deobfCompile "cofh:ThermalExpansion:1.12.2-5+:universal"
+	deobfCompile "cofh:CoFHCore:1.12.2-4+:universal"
+	deobfCompile "cofh:CoFHWorld:1.12.2-1+:universal"
+}
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "mcversion", project.minecraft.version
+
+    from (sourceSets.main.resources.srcDirs) {
+        include "mcmod.info"
+        expand "version": project.version, "mcversion": project.minecraft.version
+    }
+        
+    from (sourceSets.main.resources.srcDirs) {
+        exclude "mcmod.info"
+    }
+}
+
+String getVersion() {
+	String major = "0";
+	String revision = "0";
+	String patch = "0";
+	String prefix = "public static final String VERSION = \"";
+	File file = file("src/main/java/p455w0rd/embersified/init/ModGlobals.java")
+	file.eachLine { String s ->
+		s = s.trim();
+		if (s.startsWith(prefix)) {
+			s = s.substring(prefix.length(), s.length() - 2);
+			String[] pts = s.split("\\.");
+
+			major = pts[0];
+			revision = pts[1];
+			patch = pts[2];
+		}
+	}
+	return "$major.$revision.$patch";
+}
